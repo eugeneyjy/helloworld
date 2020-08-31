@@ -41,8 +41,7 @@ class Chesspiece {
     this.y = y;
   }
 
-  canMove(board, x, y) {
-  }
+  canMove(board, x, y) {}
 
   eatable(piece) {
     if(piece != null){
@@ -53,6 +52,60 @@ class Chesspiece {
       }
     }
     return null;
+  }
+
+  leap_forward(board, dy) {
+    var y = dy;
+    // console.log(this.y + y);
+    while(y != 0){
+      // console.log(board.getPieceAt(this.x, this.y - y));
+      if(board.getPieceAt(this.x, this.y - y) && y != dy){ // see if got piece in the way
+        // console.log("leap forward");
+        return true;
+      }
+      if(y > 0){
+        y--;
+      }else if(y < 0){
+        y++;
+      }
+    }
+    return false;
+  }
+
+  leap_side(board, dx) {
+    var x = dx;
+    while(x != 0){
+      if(board.getPieceAt(this.x - x, this.y) && x != dx){ // see if got piece in the way
+        return true;
+      }
+      if(x > 0){
+        x--;
+      }else if(x < 0){
+        x++;
+      }
+    }
+    return false;
+  }
+
+  leap_diagonal(board, dx, dy) {
+    var y = dy;
+    var x = dx;
+    while(x != 0 && y != 0){
+      if(board.getPieceAt(this.x - x, this.y - y) && x != dx && y != dy){ // see if got piece in the way
+        return true;
+      }
+      if(x > 0){
+        x--;
+      }else if(x < 0){
+        x++;
+      }
+      if(y > 0){
+        y--;
+      }else if(y < 0){
+        y++;
+      }
+    }
+    return false;
   }
 }
 
@@ -72,9 +125,6 @@ class King extends Chesspiece {
     var dx = this.x - x;
     var dy = this.y - y;
     if(abs(dx) <= 1 && abs(dy) <= 1){
-      if(board.getPieceAt(x, y)){
-
-      }
       return true;
     }else{
       return false;
@@ -96,9 +146,16 @@ class Queen extends Chesspiece {
       return false;
     }
     if(abs(dx) == abs(dy)){ // moving diagonally
-      return true;
+      if(this.leap_diagonal(board, dx, dy))
+        return false;
+      else
+        return true;
     }else if(dx == 0 || dy == 0){ // moving straight
-      return true;
+      if(this.leap_forward(board, dy) || this.leap_side(board, dx)){
+        return false;
+      }else{
+        return true;
+      }
     }else{
       return false;
     }
@@ -119,7 +176,10 @@ class Rook extends Chesspiece {
       return false;
     }
     if(dx == 0 || dy == 0){ // moving straight
-      return true;
+      if(this.leap_forward(board, dy) || this.leap_side(board, dx))
+        return false;
+      else
+        return true;
     }else{
       return false;
     }
@@ -163,7 +223,10 @@ class Bishop extends Chesspiece {
       return false;
     }
     if(abs(dx) == abs(dy)){
-      return true;
+      if(this.leap_diagonal(board, dx, dy))
+        return false;
+      else
+        return true;
     }else{
       return false;
     }
@@ -187,7 +250,6 @@ class Pawn extends Chesspiece {
     if(this.eatable(eating) == false){
       return false;
     }
-    console.log(dx + " " + dy);
     if(dy == 1 && abs(dx) == 1) { // moving diagonally
       if(this.eatable(eating)){
         return true;

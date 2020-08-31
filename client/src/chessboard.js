@@ -5,7 +5,7 @@ class Chessboard {
     this.sidegrid = 8;
     this.grid = [];
     this.movingpiece = null;
-
+    this.turn = "white";
     // filling initial chess pieces
     for(var i = 0; i < this.sidegrid; i++){
       this.grid.push([]);
@@ -82,7 +82,16 @@ class Chessboard {
   }
 
   getPieceAt(x, y) {
+    // console.log(x + " " + y);
     return this.grid[x][y];
+  }
+
+  changeTurn() {
+    if(this.turn == "white"){
+      this.turn = "black";
+    }else{
+      this.turn = "white";
+    }
   }
 
   movePiece() {
@@ -90,15 +99,17 @@ class Chessboard {
     var y = floor(map(mouseY, 0, this.sidegrid*this.gridsize, 0, 8));
     if(x < 8 && y < 8){
       if(this.movingpiece == null && this.grid[x][y] != null){
-        this.movingpiece = this.grid[x][y];
-        this.movingpiece.startMove();
+        if(this.grid[x][y].color == this.turn){  // check if moving own piece
+          this.movingpiece = this.grid[x][y];
+          this.movingpiece.startMove();
+        }
       }else if(this.movingpiece != null){
         if(this.movingpiece.canMove(this,x,y)){
           this.grid[this.movingpiece.x][this.movingpiece.y] = null;
           this.movingpiece.move(x,y);
           this.grid[x][y] = this.movingpiece;
+          this.changeTurn();
         }
-        // this.grid[x][y] = this.movingpiece;
         this.movingpiece.stopMove();
         this.movingpiece = null;
       }
