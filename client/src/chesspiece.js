@@ -7,22 +7,25 @@ class Chesspiece {
     this.moving = false;
     this.type;
     this.img;
+    this.alive = true;
   }
 
   show() {
-    if(this.color == "black"){
-      stroke(255);
-      fill(0);
-    }else{
-      stroke(0);
-      fill(255);
-    }
-    if(this.moving == true){
-      imageMode(CENTER);
-      image(this.img, mouseX, mouseY, this.scale+10, this.scale+10);
-    }else{
-      imageMode(CORNER);
-      image(this.img, this.x*this.scale, this.y*this.scale, this.scale, this.scale);
+    if(this.alive){
+      if(this.color == "black"){
+        stroke(255);
+        fill(0);
+      }else{
+        stroke(0);
+        fill(255);
+      }
+      if(this.moving == true){
+        imageMode(CENTER);
+        image(this.img, mouseX, mouseY, this.scale+10, this.scale+10);
+      }else{
+        imageMode(CORNER);
+        image(this.img, this.x*this.scale, this.y*this.scale, this.scale, this.scale);
+      }
     }
   }
 
@@ -37,6 +40,19 @@ class Chesspiece {
   move(x, y) {
     this.x = x;
     this.y = y;
+  }
+
+  killed() {
+    this.alive = false;
+  }
+
+  dead() {
+    if(this.alive == false){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
   canMove(board, x, y) {}
@@ -286,6 +302,8 @@ class Pawn extends Chesspiece {
     }
     if(dy == 1 && abs(dx) == 1) { // moving diagonally
       if(this.eatable(eating)){
+        if(this.first_move)
+          this.first_move = false; // used first_move
         return true;
       }else{
         return false;

@@ -4,8 +4,11 @@ class Chessboard {
     this.gridsize = this.scale*10;
     this.sidegrid = 8;
     this.grid = [];
+    this.blackpieces = [];
+    this.whitepieces = [];
     this.movingpiece = null;
     this.turn = "white";
+    this.win = null;
     // filling initial chess pieces
     for(var i = 0; i < this.sidegrid; i++){
       this.grid.push([]);
@@ -15,9 +18,6 @@ class Chessboard {
     }
     this.fillPieces("black");
     this.fillPieces("white");
-    // this.grid[0][0] = new Chesspiece(0,0,"white","r", this.gridsize);
-    // this.grid[0][7] = new Chesspiece(0,7,"white","r", this.gridsize);
-
   }
 
   fillPieces(color) {
@@ -25,8 +25,8 @@ class Chessboard {
     var x;
     var y;
 
-    for(var i = 0; i < this.sidegrid; i++){
-      for(var j = 0; j < 2; j++){
+    for(var j = 0; j < 2; j++){
+      for(var i = 0; i < this.sidegrid; i++){
         if(color == "black"){
           x = i;
           y = j;
@@ -50,6 +50,11 @@ class Chessboard {
           }
         }
         this.grid[x][y] = piece;
+        if(color == "black"){
+          this.blackpieces.push(piece);
+        }else{
+          this.whitepieces.push(piece);
+        }
       }
     }
   }
@@ -72,12 +77,19 @@ class Chessboard {
   }
 
   showPieces() {
-    for(var i = 0; i < this.sidegrid; i++){
-      for(var j = 0; j < this.sidegrid; j++){
-        if(this.grid[i][j] != null){
-          this.grid[i][j].show();
-        }
-      }
+    // for(var i = 0; i < this.sidegrid; i++){
+    //   for(var j = 0; j < this.sidegrid; j++){
+    //     if(this.grid[i][j] != null){
+    //       this.grid[i][j].show();
+    //     }
+    //   }
+    // }
+    for(var i = 0; i < this.blackpieces.length; i++){
+      this.blackpieces[i].show();
+    }
+
+    for(var i = 0; i < this.whitepieces.length; i++){
+      this.whitepieces[i].show();
     }
   }
 
@@ -94,7 +106,17 @@ class Chessboard {
     }
   }
 
-  movePiece() {
+  movePiece(piece, x, y) {
+    piece.move(x, y);
+    if(this.grid[x][y] == null)
+      this.grid[x][y] = piece;
+    else{
+      this.grid[x][y].killed();
+      this.grid[x][y] = piece;
+    }
+  }
+
+  moving() {
     var x = floor(map(mouseX, 0, this.sidegrid*this.gridsize, 0, 8));
     var y = floor(map(mouseY, 0, this.sidegrid*this.gridsize, 0, 8));
     if(x < 8 && y < 8){
@@ -106,13 +128,22 @@ class Chessboard {
       }else if(this.movingpiece != null){
         if(this.movingpiece.canMove(this,x,y)){
           this.grid[this.movingpiece.x][this.movingpiece.y] = null;
-          this.movingpiece.move(x,y);
-          this.grid[x][y] = this.movingpiece;
+          this.movePiece(this.movingpiece, x, y);
           this.changeTurn();
         }
         this.movingpiece.stopMove();
         this.movingpiece = null;
       }
+    }
+  }
+
+  isEnd() {
+    if(this.blackpieces[3].dead()){
+      console.log("White win");
+      this.win = "white";
+    }else if(this.whitepieces[3].dead()){
+      console.log("Black win");
+      this.win = "black";
     }
   }
 }

@@ -29,5 +29,8 @@ function draw() {
 }
 
 function mouseClicked() {
-  board.movePiece();
+  if(board.win == null){
+    board.moving();
+    board.isEnd();
+  }
 }
