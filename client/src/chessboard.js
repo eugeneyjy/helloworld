@@ -57,12 +57,12 @@ class Chessboard {
   show() {
     for(var i = 0; i < this.sidegrid; i++){
       for(var j = 0; j < this.sidegrid; j++){
-        stroke(0);
+        stroke(0, 74, 158);
         if((i+j)%2 == 0){
-          fill(255);
+          fill(232, 235, 239);
           // fill(0);
         }else{
-          fill(0);
+          fill(125, 135, 150);
           // fill(255);
         }
         rect(i*this.gridsize, j*this.gridsize, this.gridsize, this.gridsize);

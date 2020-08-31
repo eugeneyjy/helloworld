@@ -6,6 +6,7 @@ class Chesspiece {
     this.scale = scale;
     this.moving = false;
     this.type;
+    this.img;
   }
 
   show() {
@@ -17,14 +18,11 @@ class Chesspiece {
       fill(255);
     }
     if(this.moving == true){
-      textSize(36);
-      textAlign(CENTER, CENTER);
-      text(this.type, mouseX, mouseY);
-    //   console.log(this.x);
+      imageMode(CENTER);
+      image(this.img, mouseX, mouseY, this.scale+10, this.scale+10);
     }else{
-      textSize(32);
-      textAlign(CENTER, CENTER);
-      text(this.type, this.x*this.scale, this.y*this.scale, this.scale, this.scale);
+      imageMode(CORNER);
+      image(this.img, this.x*this.scale, this.y*this.scale, this.scale, this.scale);
     }
   }
 
@@ -113,6 +111,12 @@ class King extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kg";
+
+    if(this.color == "white"){
+      this.img = images[1];
+    }else{
+      this.img = images[0];
+    }
   }
 
   canMove(board, x, y) {
@@ -136,6 +140,12 @@ class Queen extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "qn";
+
+    if(this.color == "white"){
+      this.img = images[3];
+    }else{
+      this.img = images[2];
+    }
   }
 
   canMove(board, x, y) {
@@ -166,6 +176,12 @@ class Rook extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "rk";
+
+    if(this.color == "white"){
+      this.img = images[9];
+    }else{
+      this.img = images[8];
+    }
   }
 
   canMove(board, x, y) {
@@ -190,6 +206,12 @@ class Knight extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kn";
+
+    if(this.color == "white"){
+      this.img = images[7];
+    }else{
+      this.img = images[6];
+    }
   }
 
   canMove(board, x, y) {
@@ -213,6 +235,12 @@ class Bishop extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "bs";
+
+    if(this.color == "white"){
+      this.img = images[5];
+    }else{
+      this.img = images[4];
+    }
   }
 
   canMove(board, x, y) {
@@ -238,6 +266,12 @@ class Pawn extends Chesspiece {
     super(x, y, color, scale);
     this.type = "pn";
     this.first_move = true;
+
+    if(this.color == "white"){
+      this.img = images[11];
+    }else{
+      this.img = images[10];
+    }
   }
 
   canMove(board, x, y) {
