@@ -8,6 +8,7 @@ class Chesspiece {
     this.type;
     this.img;
     this.alive = true;
+    this.first_move = true;
   }
 
   show() {
@@ -21,10 +22,10 @@ class Chesspiece {
       }
       if(this.moving == true){
         imageMode(CENTER);
-        image(this.img, mouseX, mouseY, this.scale+10, this.scale+10);
+        image(this.img, mouseX, mouseY, this.scale, this.scale);
       }else{
         imageMode(CORNER);
-        image(this.img, this.x*this.scale, this.y*this.scale, this.scale, this.scale);
+        image(this.img, this.x*this.scale+offset, this.y*this.scale+offset, this.scale, this.scale);
       }
     }
   }
@@ -40,6 +41,8 @@ class Chesspiece {
   move(x, y) {
     this.x = x;
     this.y = y;
+    if(this.first_move)
+      this.first_move = false; // used first_move
   }
 
   killed() {
@@ -129,15 +132,18 @@ class King extends Chesspiece {
     this.type = "kg";
 
     if(this.color == "white"){
-      this.img = images[1];
+      this.img = white_images[5];
     }else{
-      this.img = images[0];
+      this.img = black_images[5];
     }
   }
 
   canMove(board, x, y) {
     var eating = board.getPieceAt(x, y);
     if(eating != null){
+      if(eating.type == "rk" && eating.color == this.color){
+        return(this.canCastle(board, eating));
+      }
       if(eating.color == this.color){
         return false;
       }
@@ -150,6 +156,30 @@ class King extends Chesspiece {
       return false;
     }
   }
+
+  canCastle(board, rook) {
+    if(this.first_move && rook.first_move){
+      var dx = this.x - rook.x;
+      if(this.leap_side(board, dx)){
+        console.log("cant castle");
+        return false;
+      }else{
+        return "castling";
+      }
+    }
+    return false;
+  }
+
+  castle(rook) {
+    var dx = this.x - rook.x;
+    if(dx > 0){ // castle with left rook
+      this.x -= 2;
+      rook.x = this.x + 1;
+    }else{      // castle with right rook
+      this.x += 2;
+      rook.x = this.x - 1;
+    }
+  }
 }
 
 class Queen extends Chesspiece {
@@ -158,9 +188,9 @@ class Queen extends Chesspiece {
     this.type = "qn";
 
     if(this.color == "white"){
-      this.img = images[3];
+      this.img = white_images[0];
     }else{
-      this.img = images[2];
+      this.img = black_images[0];
     }
   }
 
@@ -194,9 +224,9 @@ class Rook extends Chesspiece {
     this.type = "rk";
 
     if(this.color == "white"){
-      this.img = images[9];
+      this.img = white_images[1];
     }else{
-      this.img = images[8];
+      this.img = black_images[1];
     }
   }
 
@@ -224,9 +254,9 @@ class Knight extends Chesspiece {
     this.type = "kn";
 
     if(this.color == "white"){
-      this.img = images[7];
+      this.img = white_images[3];
     }else{
-      this.img = images[6];
+      this.img = black_images[3];
     }
   }
 
@@ -253,9 +283,9 @@ class Bishop extends Chesspiece {
     this.type = "bs";
 
     if(this.color == "white"){
-      this.img = images[5];
+      this.img = white_images[2];
     }else{
-      this.img = images[4];
+      this.img = black_images[2];
     }
   }
 
@@ -281,12 +311,12 @@ class Pawn extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "pn";
-    this.first_move = true;
+    this.promotion = false;
 
     if(this.color == "white"){
-      this.img = images[11];
+      this.img = white_images[4];
     }else{
-      this.img = images[10];
+      this.img = black_images[4];
     }
   }
 
@@ -294,7 +324,7 @@ class Pawn extends Chesspiece {
     var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
-    if(this.color == "black"){
+    if(this.color == board.opp){
       dy = -dy;
     }
     if(this.eatable(eating) == false){
@@ -302,19 +332,14 @@ class Pawn extends Chesspiece {
     }
     if(dy == 1 && abs(dx) == 1) { // moving diagonally
       if(this.eatable(eating)){
-        if(this.first_move)
-          this.first_move = false; // used first_move
         return true;
       }else{
         return false;
       }
     }else if(dy >= 0 && dy <= 1 && dx == 0){ // moving forward
-      if(this.first_move)
-        this.first_move = false; // used first_move
       return true;
     }else if(dy == 2 && dx == 0){ // moving forward 2 space
-      if(this.first_move){
-        this.first_move = false; // used first_move
+      if(this.first_move){ // using first move
         return true;
       }else{
         return false;
@@ -328,7 +353,7 @@ class Pawn extends Chesspiece {
     if(piece != null){
       var dx = this.x - piece.x;
       var dy = this.y - piece.y;
-      if(this.color == "black"){
+      if(this.color == board.opp){
         dy = -dy;
       }
       if(piece.color == this.color){
@@ -340,5 +365,36 @@ class Pawn extends Chesspiece {
       }
     }
     return null;
+  }
+
+  reachEnd() {
+    if(this.color == board.player && this.y == 0){
+      this.promotion = true;
+      return true;
+    }else if(this.color == board.opp && this.y == 7){
+      this.promotion = true;
+      return true;
+    }
+    return false;
+  }
+
+  showPromotion() {
+    var y;
+    for(var i = 0; i < 4; i++){
+      stroke(0);
+      fill(255);
+      // console.log((this.x*this.scale+offset) + " " + (this.y*this.scale*i+offset));
+      if(this.y == 0){
+        y = this.y + i;
+      }
+      else if(this.y == 7){
+        y = this.y - i;
+      }
+      rect(this.x*this.scale+offset, y*this.scale+offset, this.scale, this.scale);
+      if(this.color == "white")
+        image(white_images[i], this.x*this.scale+offset, y*this.scale+offset, this.scale, this.scale)
+      else
+        image(black_images[i], this.x*this.scale+offset, y*this.scale+offset, this.scale, this.scale)
+    }
   }
 }

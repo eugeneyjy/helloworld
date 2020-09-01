@@ -6,9 +6,24 @@
     <script src="./src/chesspiece.js"></script>
     <script src="./src/chessboard.js"></script>
     <script src="./src/sketch.js"></script>
+    <link rel="stylesheet" href="./style/style.css" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" crossorigin="anonymous">
   </head>
   <body>
+    <header>
+      <h1 id="title">Chess</h1>
+    </header>
     <main>
+      <div id="sketch-div">
+      </div>
     </main>
+    <div class="backdrop-window" id="endgame-window">
+      <div class="msg-box" id="endgame-msg">
+        <p class="msg">White has Won!</p>
+        <div class="button-container">
+          <button type="button" id="new-game"><i class="fas fa-undo-alt"></i></button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
