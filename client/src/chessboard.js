@@ -16,7 +16,7 @@ class Chessboard {
     this.promoting = null;
 
     this.fillPieces("black");
-    console.log(this.opppieces);
+    // console.log(this.opppieces);
     this.fillPieces("white");
   }
 
@@ -62,18 +62,23 @@ class Chessboard {
   show() {
     for(var i = 0; i < this.sidegrid; i++){
       for(var j = 0; j < this.sidegrid; j++){
-        // stroke(0, 74, 158);
         noStroke();
         if((i+j)%2 == 0){
-          // stroke(232, 235, 239);
           fill(232, 235, 239);
-          // fill(0);
         }else{
-          // stroke(125, 135, 150);
           fill(125, 135, 150);
-          // fill(255);
         }
-        rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize);
+        if(i == 0 && j == 0){
+          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 5, 0, 0, 0);
+        }else if(i == 7 && j == 0){
+          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 5, 0, 0);
+        }else if(i == 7 && j == 7){
+          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 0, 5, 0);
+        }else if(i == 0 && j == 7){
+          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 0, 0, 5);
+        }else{
+          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize);
+        }
       }
     }
     this.showPieces();
@@ -116,7 +121,7 @@ class Chessboard {
   }
 
   movePiece(piece, move, x, y, pointing) {
-    piece.move(x, y, pointing);
+    piece.move(this, x, y, pointing);
     if(this.turn == this.player){
       this.clearSelfEnPassant();
     }else{
@@ -127,18 +132,21 @@ class Chessboard {
   moving(x, y) {
     var move;
     var pointing = this.getPieceAt(x,y);
-    console.log(pointing);
+    // console.log(pointing);
     if((x >= 0 && x < 8) && (y >= 0 && y < 8)){
       if(this.movingpiece == null && pointing != null){
         if(pointing.color == this.turn){  // check if moving own piece
           this.movingpiece = pointing;
           this.movingpiece.startMove();
+          if(this.movingpiece.type == "pn")
+            console.log(this.movingpiece.legalMoves(this));
         }
       }else if(this.movingpiece != null){
         if(move = this.movingpiece.canMove(this, x, y, pointing)){
           // this.grid[this.movingpiece.x][this.movingpiece.y] = null;
           this.movePiece(this.movingpiece, move, x, y, pointing);
           this.changeTurn();
+          showTurn();
         }
         this.movingpiece.stopMove();
         this.movingpiece = null;

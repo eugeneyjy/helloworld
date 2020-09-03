@@ -11,19 +11,35 @@
   </head>
   <body>
     <header>
-      <h1 id="title">Chess</h1>
+      <h1 id="title">Chess A.I.</h1>
     </header>
     <main>
-      <div id="sketch-div">
+      <div class="wrapper">
+        <div id="sketch-div">
+        </div>
+        <div id=sidebar>
+          <div id=turn class="side-wrapper">
+            <div id=turn-color>
+            </div>
+            <div class="text-wrapper">
+              <p id="turn-text">White to move</p>
+            </div>
+          </div>
+          <div id="recording" class="side-wrapper">
+          </div>
+          <div id="toolbar" class="side-wrapper button-container">
+            <button type="button" id="new-game">New Game</button>
+        </div>
       </div>
     </main>
     <div class="backdrop-window" id="endgame-window">
       <div class="msg-box" id="endgame-msg">
         <p class="msg">White has Won!</p>
         <div class="button-container">
-          <button type="button" id="new-game"><i class="fas fa-undo-alt"></i></button>
+          <button type="button" id="rematch"><i class="fas fa-undo-alt"></i></button>
         </div>
       </div>
     </div>
+    <script src="./src/client.js"></script>
   </body>
 </html>

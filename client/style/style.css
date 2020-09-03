@@ -1,11 +1,27 @@
 body {
-  background: #eee;
+  background: rgb(49,46,43);
   font-family: system-ui;
-  /* color: white; */
+  color: white;
 }
 
 header {
   text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+}
+
+*,*::after,*::before {
+  box-sizing: border-box;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 #title {
@@ -21,6 +37,70 @@ header {
 #sketch-div {
   display: flex;
   justify-content: center;
+}
+
+#sidebar {
+  width: 350px;
+  height: 720px;
+  margin: 10px;
+  border-radius: 5px;
+  background: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.side-wrapper {
+  background: #ccc;
+  margin: 10px 0px;
+  border-radius: 5px;
+}
+
+#turn {
+  width: 100%;
+  height: 10%;
+  margin: 0px 0px 10px 0px;
+  /* background: #ccc; */
+  /* border-radius: 5px; */
+  display: flex;
+  flex-grow: 1;
+}
+
+#turn-color {
+  width: 50px;
+  height: 40px;
+  border-radius: 5px;
+  margin: auto 15px;
+  background: white;
+}
+
+.text-wrapper {
+  font-weight: bold;
+  font-size: 28px;
+  text-align: center;
+  position: relative;
+  width: 100%;
+}
+
+#turn-text {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  margin: 0;
+  transform: translateY(-60%);
+}
+
+#recording {
+  width: 100%;
+  height: 70%;
+  flex-grow: 8;
+}
+
+#toolbar {
+  width: 100%;
+  margin: 10px 0px 0px 0px;
+  flex-grow: 1;
 }
 
 .backdrop-window {
@@ -59,11 +139,15 @@ header {
 	background: none;
 	border: none;
 	font-size: 32px;
+  font-weight: bold;
 	margin: 0 auto;
+  color: black;
 }
 
 .button-container button:hover {
 	color: #319df6;
+  cursor: pointer;
+  /* color: black; */
 }
 
 .button-container button:focus {

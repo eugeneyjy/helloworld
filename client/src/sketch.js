@@ -2,7 +2,8 @@ var board;
 var black_images = [];
 var white_images = [];
 var size;
-var border_width = 10;
+var border_width = 0;
+var board_scale = 9;
 var offset = border_width/2;
 
 function preload() {
@@ -21,14 +22,14 @@ function preload() {
 }
 
 function setup() {
-  board = new Chessboard(9);
+  board = new Chessboard(board_scale);
   size = board.sidegrid*board.gridsize;
   var canvas = createCanvas(size+border_width, size+border_width);
   canvas.parent('sketch-div');
 }
 
 function draw() {
-  background(0);
+  background(64,64,64);
   board.show();
   // noLoop();
 }

@@ -38,7 +38,7 @@ class Chesspiece {
     this.moving = false;
   }
 
-  move(x, y, target) {
+  move(board, x, y, target) {
     this.x = x;
     this.y = y;
     if(this.first_move)
@@ -47,6 +47,19 @@ class Chesspiece {
       target.alive = false;
     }
   }
+
+  generateMove(board, dx, dy) {
+    var move;
+    var x = this.x + dx;
+    var y = this.y + dy;
+    var eating = board.getPieceAt(x, y);
+    move = [x, y];
+    if(this.canMove(board, x, y, eating)){
+      return move;
+    }
+    return null;
+  }
+
 
   killed() {
     this.alive = false;
@@ -184,8 +197,8 @@ class King extends Chesspiece {
     }
   }
 
-  move(x, y, target) {
-    if(target.type == "rk"){
+  move(board, x, y, target) {
+    if(target != null && target.type == "rk" && target.color == this.color){
       this.castle(target);
     }else{
       this.x = x;
@@ -345,14 +358,14 @@ class Pawn extends Chesspiece {
     if(this.color == board.opp){
       dy = -dy;
     }
-    if(this.eatable(eating) == false){
+    if(this.eatable(eating, board) == false){
       return false;
     }
     if(dy == 1 && abs(dx) == 1) { // moving diagonally
       if(this.enpassant != null && this.enpassant.x == x){  // move behind en passant
         return true;
       }
-      if(this.eatable(eating)){
+      if(this.eatable(eating, board)){
         return true;
       }else{
         return false;
@@ -370,7 +383,7 @@ class Pawn extends Chesspiece {
     }
   }
 
-  eatable(piece) {
+  eatable(piece, board) {
     if(piece != null){
       var dx = this.x - piece.x;
       var dy = this.y - piece.y;
@@ -388,7 +401,7 @@ class Pawn extends Chesspiece {
     return null;
   }
 
-  move(x, y, target) {
+  move(board, x, y, target) {
     var dy = abs(this.y - y);
     this.x = x;
     this.y = y;
@@ -413,6 +426,36 @@ class Pawn extends Chesspiece {
     if(this.reachEnd()){
       board.promoting = this;
     }
+  }
+
+  legalMoves(board) {
+    var moves = [];
+    var dy, moveX, moveY, move;
+    var eating = null;
+    if(this.color == board.player){
+      dy = -1;
+    }else{
+      dy = 1;
+    }
+    for(var dx = -1; dx < 2; dx++){
+      if(move = this.generateMove(board, dx, dy)){
+        moves.push(move);
+      }
+    }
+
+    if(this.first_move){
+      if(this.color == board.player){
+        dy = -2;
+      }else{
+        dy = 2;
+      }
+      for(var dx = -1; dx < 2; dx++){
+        if(move = this.generateMove(board, dx, dy)){
+          moves.push(move);
+        }
+      }
+    }
+    return moves;
   }
 
   reachEnd() {
