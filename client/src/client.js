@@ -12,6 +12,7 @@ function showTurn() {
 
 function newGame() {
   board = new Chessboard(board_scale);
+  showTurn();
 }
 
 var newgame = document.getElementById('new-game');
