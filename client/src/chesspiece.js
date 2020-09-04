@@ -37,7 +37,8 @@ class Chesspiece {
       // console.log(hint[i]);
       // ellipseMode();
       fill('rgba(0,0,0,0.25)');
-      noStroke();
+      stroke(255);
+      // noStroke();
       circle(hint[i][0]*this.scale+offset+this.scale/2, hint[i][1]*this.scale+offset+this.scale/2, 15);
     }
   }
@@ -152,6 +153,82 @@ class Chesspiece {
     }
     return false;
   }
+
+  cornerSteps(limit) {
+    var u_dy, l_dx, d_dy, r_dx;
+    u_dy = this.y;
+    l_dx = this.x;
+    d_dy = 7 - this.y;
+    r_dx = 7-this.x;
+    var tl = Math.min(u_dy, l_dx, limit);
+    var tr = Math.min(r_dx, u_dy, limit);
+    var bl = Math.min(l_dx, d_dy, limit);
+    var br = Math.min(r_dx, d_dy, limit);
+    return [tl,tr,bl,br];
+  }
+
+  straightSteps(limit) {
+    var up = Math.min(this.y, limit);
+    var down = Math.min(7-this.y, limit);
+    var left = Math.min(this.x, limit);
+    var right = Math.min(7-this.x);
+
+    return [up,down,left,right];
+  }
+
+  cornerMoves(board, limit) {
+    var moves = [];
+    var move;
+    var steps = this.cornerSteps(limit);
+    for(var i = 0; i <= steps[0]; i++){     // genereate move for top left corner
+      if(move = this.generateMove(board, -i, -i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[1]; i++){      // generate move for top right corner
+      if(move = this.generateMove(board, i, -i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[2]; i++){     // generate move for bottom left corner
+      if(move = this.generateMove(board, -i, i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[3]; i++){     // generate move for bottom right corner
+      if(move = this.generateMove(board, i, i)){
+        moves.push(move);
+      }
+    }
+    return moves;
+  }
+
+  straightMoves(board, limit) {
+    var moves = [];
+    var move;
+    var steps = this.straightSteps(limit);
+    for(var i = 0; i <= steps[0]; i++){     // generate move upward
+      if(move = this.generateMove(board, 0, -i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[1]; i++){     // generate move downward
+      if(move = this.generateMove(board, 0, i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[2]; i++){     // generate move left
+      if(move = this.generateMove(board, -i, 0)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[3]; i++){     // generate move right
+      if(move = this.generateMove(board, i, 0)){
+        moves.push(move);
+      }
+    }
+    return moves;
+  }
 }
 
 class King extends Chesspiece {
@@ -189,7 +266,7 @@ class King extends Chesspiece {
     if(this.first_move && rook.first_move){
       var dx = this.x - rook.x;
       if(this.leap_side(board, dx)){
-        console.log("cant castle");
+        // console.log("cant castle");
         return false;
       }else{
         return "castling";
@@ -221,6 +298,29 @@ class King extends Chesspiece {
         target.alive = false;
       }
     }
+  }
+
+  castleMoves(board) {
+    var moves = [];
+    var move;
+    if(this.first_move){
+      if(move = this.generateMove(board, -4, 0)){ // generate move with left castle
+        moves.push(move);
+      }
+      if(move = this.generateMove(board, 3, 0)){  // generate move with right castle
+        moves.push(move);
+      }
+    }
+    return moves;
+  }
+
+  legalMoves(board) {
+    var straight_moves = this.straightMoves(board, 1);
+    var corner_moves = this.cornerMoves(board, 1);
+    var castle_moves = this.castleMoves(board);
+    var moves = straight_moves.concat(corner_moves);
+    moves = moves.concat(castle_moves);
+    return moves;
   }
 }
 
@@ -258,6 +358,13 @@ class Queen extends Chesspiece {
       return false;
     }
   }
+
+  legalMoves(board) {
+    var straight_moves = this.straightMoves(board, 7);
+    var corner_moves = this.cornerMoves(board, 7);
+    var moves = straight_moves.concat(corner_moves);
+    return moves;
+  }
 }
 
 class Rook extends Chesspiece {
@@ -288,6 +395,10 @@ class Rook extends Chesspiece {
       return false;
     }
   }
+
+  legalMoves(board) {
+    return this.straightMoves(board, 7);
+  }
 }
 
 class Knight extends Chesspiece {
@@ -316,6 +427,19 @@ class Knight extends Chesspiece {
     }else{
       return false;
     }
+  }
+
+  legalMoves() {
+    var moves = [];
+    var move;
+    for(var dx = -2; dx <= 2; dx++){
+      for(var dy = -2; dy <= 2; dy++){
+        if(move = this.generateMove(board, dx, dy)){
+          moves.push(move);
+        }
+      }
+    }
+    return moves;
   }
 }
 
@@ -348,54 +472,8 @@ class Bishop extends Chesspiece {
     }
   }
 
-  calcStep() {
-    var u_dy, l_dx, d_dy, r_dx;
-    u_dy = this.y;
-    l_dx = this.x;
-    d_dy = 7 - this.y;
-    r_dx = 7-this.x;
-    var tl = u_dy, tr = r_dx, bl = l_dx, br = r_dx;
-    if(u_dy > l_dx){
-      tl = l_dx;
-    }
-    if(r_dx > u_dy){
-      tr = u_dy;
-    }
-    if(l_dx > d_dy){
-      bl = d_dy;
-    }
-    if(r_dx > d_dy){
-      br = d_dy;
-    }
-    return [tl,tr,bl,br];
-  }
-
   legalMoves(board) {
-    var moves = [];
-    var dy, moveX, moveY, move;
-    var steps = this.calcStep();
-    // console.log(steps[0] + " " + steps[1] + " " + steps[2] + " " + steps[3]);
-    for(var i = 0; i <= steps[0]; i++){     // genereate move for top left corner
-      if(move = this.generateMove(board, -i, -i)){
-        moves.push(move);
-      }
-    }
-    for(var i = 0; i <= steps[1]; i++){      // generate move for top right corner
-      if(move = this.generateMove(board, i, -i)){
-        moves.push(move);
-      }
-    }
-    for(var i = 0; i <= steps[2]; i++){     // generate move for bottom left corner
-      if(move = this.generateMove(board, -i, i)){
-        moves.push(move);
-      }
-    }
-    for(var i = 0; i <= steps[3]; i++){     // generate move for bottom right corner
-      if(move = this.generateMove(board, i, i)){
-        moves.push(move);
-      }
-    }
-    return moves;
+    return this.cornerMoves(board, 7);
   }
 }
 
