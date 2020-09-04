@@ -21,12 +21,24 @@ class Chesspiece {
         fill(255);
       }
       if(this.moving == true){
+        // this.showHint();
         imageMode(CENTER);
         image(this.img, mouseX, mouseY, this.scale, this.scale);
       }else{
         imageMode(CORNER);
         image(this.img, this.x*this.scale+offset, this.y*this.scale+offset, this.scale, this.scale);
       }
+    }
+  }
+
+  showHint() {
+    var hint = this.legalMoves(board);
+    for(var i = 0; i < hint.length; i++){
+      // console.log(hint[i]);
+      // ellipseMode();
+      fill('rgba(0,0,0,0.25)');
+      noStroke();
+      circle(hint[i][0]*this.scale+offset+this.scale/2, hint[i][1]*this.scale+offset+this.scale/2, 15);
     }
   }
 
@@ -335,6 +347,56 @@ class Bishop extends Chesspiece {
       return false;
     }
   }
+
+  calcStep() {
+    var u_dy, l_dx, d_dy, r_dx;
+    u_dy = this.y;
+    l_dx = this.x;
+    d_dy = 7 - this.y;
+    r_dx = 7-this.x;
+    var tl = u_dy, tr = r_dx, bl = l_dx, br = r_dx;
+    if(u_dy > l_dx){
+      tl = l_dx;
+    }
+    if(r_dx > u_dy){
+      tr = u_dy;
+    }
+    if(l_dx > d_dy){
+      bl = d_dy;
+    }
+    if(r_dx > d_dy){
+      br = d_dy;
+    }
+    return [tl,tr,bl,br];
+  }
+
+  legalMoves(board) {
+    var moves = [];
+    var dy, moveX, moveY, move;
+    var steps = this.calcStep();
+    // console.log(steps[0] + " " + steps[1] + " " + steps[2] + " " + steps[3]);
+    for(var i = 0; i <= steps[0]; i++){     // genereate move for top left corner
+      if(move = this.generateMove(board, -i, -i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[1]; i++){      // generate move for top right corner
+      if(move = this.generateMove(board, i, -i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[2]; i++){     // generate move for bottom left corner
+      if(move = this.generateMove(board, -i, i)){
+        moves.push(move);
+      }
+    }
+    for(var i = 0; i <= steps[3]; i++){     // generate move for bottom right corner
+      if(move = this.generateMove(board, i, i)){
+        moves.push(move);
+      }
+    }
+    return moves;
+  }
 }
 
 class Pawn extends Chesspiece {
@@ -431,7 +493,6 @@ class Pawn extends Chesspiece {
   legalMoves(board) {
     var moves = [];
     var dy, moveX, moveY, move;
-    var eating = null;
     if(this.color == board.player){
       dy = -1;
     }else{

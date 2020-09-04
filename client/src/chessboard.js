@@ -81,16 +81,18 @@ class Chessboard {
         }
       }
     }
-    this.showPieces();
+    this.showPieces(this);
+    if(this.movingpiece != null)
+      this.movingpiece.showHint();
   }
 
-  showPieces() {
+  showPieces(board) {
     for(var i = 0; i < this.opppieces.length; i++){
-      this.opppieces[i].show();
+      this.opppieces[i].show(board);
     }
 
     for(var i = 0; i < this.selfpieces.length; i++){
-      this.selfpieces[i].show();
+      this.selfpieces[i].show(board);
     }
     if(this.promoting != null)
       this.promoting.showPromotion();
