@@ -2,9 +2,11 @@ var board;
 var black_images = [];
 var white_images = [];
 var size;
-var border_width = 0;
+var delay = 15;
+var border_width = 10;
 var board_scale = 9;
 var offset = border_width/2;
+var minimax = new Minimax(2);
 
 function preload() {
   black_images.push(loadImage('./image/Queen.png'));
@@ -29,9 +31,28 @@ function setup() {
 }
 
 function draw() {
-  background(64,64,64);
+  // background(64,64,64)
+  background("black");
+  // print("showing");
   board.show();
+  // print("end");
+  runAI();
+  board.isEnd();
+
   // noLoop();
+}
+
+function runAI() {
+  var from, to;
+  if(delay < 0){
+    if(board.turn == minimax.color){
+      [from,to] = minimax.getMove(board);
+      board.movePiece(from[0], from[1], to[0], to[1]);
+    }
+    delay = 15;
+  }else{
+    delay -= 1;
+  }
 }
 
 function mouseClicked() {
@@ -40,9 +61,12 @@ function mouseClicked() {
     var y = floor(map(mouseY, 0+offset, size+offset, 0, 8));
     if(board.promoting == null){
       board.moving(x, y);
-      board.isEnd();
+      // minimax.successcor(board);
+      // console.log(minimax.maxValue(board,0));
+      // console.log(board);
     }else{
       board.promotion(x, y);
     }
   }
+  // print("yo out");
 }

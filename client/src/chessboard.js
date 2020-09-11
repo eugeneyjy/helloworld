@@ -1,22 +1,19 @@
 class Chessboard {
-  constructor(scale, player="white") {
+  constructor(scale, player="white", opp="black") {
     this.scale = scale; // attribute to scale size of board
     this.gridsize = this.scale*10;
     this.sidegrid = 8;
-    this.opppieces = [];
-    this.selfpieces = [];
+    this.blackPieces = [];
+    this.whitePieces = [];
     this.movingpiece = null;
     this.turn = "white";
     this.player = player;
-    this.opp = "black"
-    if(this.player == "black"){
-      this.opp = "white";
-    }
+    this.opp = opp
     this.win = null;
     this.promoting = null;
 
     this.fillPieces("black");
-    // console.log(this.opppieces);
+    // console.log(this.blackPieces);
     this.fillPieces("white");
   }
 
@@ -49,66 +46,55 @@ class Chessboard {
             piece = new King(x,y,color,this.gridsize); //creating king
           }
         }
-        // this.grid[x][y] = piece;
-        if(color == this.opp){
-          this.opppieces.push(piece);
+        if(color == "black"){
+          this.blackPieces.push(piece);
         }else{
-          this.selfpieces.push(piece);
+          this.whitePieces.push(piece);
         }
       }
     }
   }
 
   show() {
+    // print("showing");
     for(var i = 0; i < this.sidegrid; i++){
       for(var j = 0; j < this.sidegrid; j++){
         noStroke();
         if((i+j)%2 == 0){
-          fill(232, 235, 239);
+          fill(256);
         }else{
-          fill(125, 135, 150);
+          fill(204);
         }
-        if(i == 0 && j == 0){
-          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 5, 0, 0, 0);
-        }else if(i == 7 && j == 0){
-          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 5, 0, 0);
-        }else if(i == 7 && j == 7){
-          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 0, 5, 0);
-        }else if(i == 0 && j == 7){
-          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize, 0, 0, 0, 5);
-        }else{
-          rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize);
-        }
+        rect(i*this.gridsize+offset, j*this.gridsize+offset, this.gridsize, this.gridsize);
       }
     }
     this.showPieces(this);
     if(this.movingpiece != null)
       this.movingpiece.showHint();
+    // print("show end");
   }
 
   showPieces(board) {
-    for(var i = 0; i < this.opppieces.length; i++){
-      this.opppieces[i].show(board);
+    for(var i = 0; i < this.blackPieces.length; i++){
+      this.blackPieces[i].show(board);
     }
 
-    for(var i = 0; i < this.selfpieces.length; i++){
-      this.selfpieces[i].show(board);
+    for(var i = 0; i < this.whitePieces.length; i++){
+      this.whitePieces[i].show(board);
     }
     if(this.promoting != null)
       this.promoting.showPromotion();
   }
 
   getPieceAt(x, y) {
-    // console.log(x + " " + y);
-    // return this.grid[x][y];
-    for(var i = 0; i < this.opppieces.length; i++){
-      if(this.opppieces[i].x == x && this.opppieces[i].y == y && this.opppieces[i].alive){
-        return this.opppieces[i];
+    for(var i = 0; i < this.blackPieces.length; i++){
+      if(this.blackPieces[i].x == x && this.blackPieces[i].y == y && this.blackPieces[i].alive){
+        return this.blackPieces[i];
       }
     }
-    for(var i = 0; i < this.selfpieces.length; i++){
-      if(this.selfpieces[i].x == x && this.selfpieces[i].y == y && this.selfpieces[i].alive){
-        return this.selfpieces[i];
+    for(var i = 0; i < this.whitePieces.length; i++){
+      if(this.whitePieces[i].x == x && this.whitePieces[i].y == y && this.whitePieces[i].alive){
+        return this.whitePieces[i];
       }
     }
     return null;
@@ -122,16 +108,21 @@ class Chessboard {
     }
   }
 
-  movePiece(piece, move, x, y, pointing) {
-    piece.move(this, x, y, pointing);
-    if(this.turn == this.player){
-      this.clearSelfEnPassant();
+  movePiece(x_from, y_from, x, y) {
+    var piece = this.getPieceAt(x_from, y_from);
+    var target = this.getPieceAt(x, y);
+    piece.move(this, x, y, target);
+    if(this.turn == "white"){
+      this.clearWhiteEnPassant();
     }else{
-      this.clearOppEnPassant();
+      this.clearBlackEnPassant();
     }
+    this.changeTurn();
+    showTurn();
   }
 
   moving(x, y) {
+    // print("yo");
     var move;
     var pointing = this.getPieceAt(x,y);
     // console.log(pointing);
@@ -140,31 +131,37 @@ class Chessboard {
         if(pointing.color == this.turn){  // check if moving own piece
           this.movingpiece = pointing;
           this.movingpiece.startMove();
-          if(this.movingpiece.type == "pn")
-            console.log(this.movingpiece.legalMoves(this));
+          // if(this.movingpiece.type == "pn")
+            // console.log(this.movingpiece.legalMoves(this));
         }
       }else if(this.movingpiece != null){
-        if(move = this.movingpiece.canMove(this, x, y, pointing)){
+        if(this.movingpiece.canMove(this, x, y, pointing)){
           // this.grid[this.movingpiece.x][this.movingpiece.y] = null;
-          this.movePiece(this.movingpiece, move, x, y, pointing);
-          this.changeTurn();
-          showTurn();
+          this.movePiece(this.movingpiece.x, this.movingpiece.y, x, y);
+          // if(this.turn == minimax.color){
+          //   print(minimax.getMove(board));
+          // }
+          // if(this.turn == minimax.color){
+          //   minimax.maxValue(this);
+          //   console.log(this);
+          // }
         }
         this.movingpiece.stopMove();
         this.movingpiece = null;
       }
     }
+    // print("yo again");
   }
 
-  clearSelfEnPassant() {
+  clearWhiteEnPassant() {
     for(var i = 8; i < 16; i++){
-      this.selfpieces[i].enpassant = null;
+      this.whitePieces[i].enpassant = null;
     }
   }
 
-  clearOppEnPassant() {
+  clearBlackEnPassant() {
     for(var i = 8; i < 16; i++){
-      this.opppieces[i].enpassant = null;
+      this.blackPieces[i].enpassant = null;
     }
   }
 
@@ -186,7 +183,7 @@ class Chessboard {
           promote = new Knight(piece_x,piece_y,board.player,this.gridsize); // promote to knight
         }
         if(promote != null){
-          this.selfpieces[this.selfpieces.indexOf(this.promoting)] = promote;;
+          this.whitePieces[this.whitePieces.indexOf(this.promoting)] = promote;;
           // this.grid[piece_x][piece_y] = promote;
           this.promoting = null;
         }
@@ -201,7 +198,7 @@ class Chessboard {
           promote = new Knight(piece_x,piece_y,board.opp,this.gridsize); // promote to knight
         }
         if(promote != null){
-          this.opppieces[this.opppieces.indexOf(this.promoting)] = promote;;
+          this.blackPieces[this.blackPieces.indexOf(this.promoting)] = promote;;
           // this.grid[piece_x][piece_y] = promote;
           this.promoting = null;
         }
@@ -210,12 +207,31 @@ class Chessboard {
   }
 
   isEnd() {
-    if(this.opppieces[4].dead()){
+    if(this.blackPieces[4].dead()){
       console.log("White win");
       this.win = "white";
-    }else if(this.selfpieces[4].dead()){
+    }else if(this.whitePieces[4].dead()){
       console.log("Black win");
       this.win = "black";
     }
+  }
+
+  cloneBoard() {
+    var newBoard = new Chessboard(this.scale, this.player, this.opp);
+    newBoard.turn = this.turn;
+    newBoard.win = this.win;
+    newBoard.blackPieces = [];
+    newBoard.whitePieces = [];
+    for(var i = 0; i < this.blackPieces.length; i++){
+      newBoard.blackPieces.push(this.blackPieces[i].clonePiece(this));
+    }
+    for(var i = 0; i < this.whitePieces.length; i++){
+      newBoard.whitePieces.push(this.whitePieces[i].clonePiece(this));
+    }
+    if(this.movingpiece != null)
+      newBoard.movingpiece = newBoard.getPieceAt(this.movingpiece.x, this.movingpiece.y);
+    if(this.promoting != null)
+      newBoard.promoting = newBoard.getPieceAt(this.promoting.x, this.promoting.y);
+    return newBoard;
   }
 }

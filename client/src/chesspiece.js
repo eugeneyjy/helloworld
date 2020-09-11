@@ -9,6 +9,7 @@ class Chesspiece {
     this.img;
     this.alive = true;
     this.first_move = true;
+    this.moves = [];
   }
 
   show() {
@@ -235,6 +236,7 @@ class King extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kg";
+    this.value = 100;
 
     if(this.color == "white"){
       this.img = white_images[5];
@@ -244,6 +246,9 @@ class King extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     if(eating != null){
       if(eating.type == "rk" && eating.color == this.color){
@@ -322,12 +327,27 @@ class King extends Chesspiece {
     moves = moves.concat(castle_moves);
     return moves;
   }
+
+  clonePiece(board) {
+    var newPiece = new King(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    return newPiece;
+  }
 }
 
 class Queen extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "qn";
+    this.value = 9;
 
     if(this.color == "white"){
       this.img = white_images[0];
@@ -337,6 +357,9 @@ class Queen extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
@@ -365,12 +388,27 @@ class Queen extends Chesspiece {
     var moves = straight_moves.concat(corner_moves);
     return moves;
   }
+
+  clonePiece(board) {
+    var newPiece = new Queen(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    return newPiece;
+  }
 }
 
 class Rook extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "rk";
+    this.value = 5;
 
     if(this.color == "white"){
       this.img = white_images[1];
@@ -380,6 +418,9 @@ class Rook extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
@@ -399,12 +440,27 @@ class Rook extends Chesspiece {
   legalMoves(board) {
     return this.straightMoves(board, 7);
   }
+
+  clonePiece(board) {
+    var newPiece = new Rook(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    return newPiece;
+  }
 }
 
 class Knight extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kn";
+    this.value = 3;
 
     if(this.color == "white"){
       this.img = white_images[3];
@@ -414,6 +470,9 @@ class Knight extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
@@ -441,12 +500,27 @@ class Knight extends Chesspiece {
     }
     return moves;
   }
+
+  clonePiece(board) {
+    var newPiece = new Knight(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    return newPiece;
+  }
 }
 
 class Bishop extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "bs";
+    this.value = 3;
 
     if(this.color == "white"){
       this.img = white_images[2];
@@ -456,6 +530,9 @@ class Bishop extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
@@ -475,12 +552,27 @@ class Bishop extends Chesspiece {
   legalMoves(board) {
     return this.cornerMoves(board, 7);
   }
+
+  clonePiece(board) {
+    var newPiece = new Bishop(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    return newPiece;
+  }
 }
 
 class Pawn extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "pn";
+    this.value = 1;
     this.promotion = false;
     this.enpassant = null;
 
@@ -492,6 +584,9 @@ class Pawn extends Chesspiece {
   }
 
   canMove(board, x, y, eating) {
+    if((x < 0 || x > 7) || (y < 0 || y > 7)){
+      return false;
+    }
     // var eating = board.getPieceAt(x, y);
     var dx = this.x - x;
     var dy = this.y - y;
@@ -532,10 +627,10 @@ class Pawn extends Chesspiece {
       }
       if(piece.color == this.color){
         return false;
-      }else if(dx == 0 && dy == 1){
-        return false;
-      }else{
+      }else if(abs(dx) == 1 && dy == 1){
         return true;
+      }else{
+        return false;
       }
     }
     return null;
@@ -550,10 +645,10 @@ class Pawn extends Chesspiece {
       if(dy == 2){ // used double move then set adjacent en passant
         var pawn_l = board.getPieceAt(x-1, y);
         var pawn_r = board.getPieceAt(x+1, y);
-        if(pawn_l != null){
+        if(pawn_l != null && pawn_l.color != this.color){
           pawn_l.enpassant = this;
         }
-        if(pawn_r != null){
+        if(pawn_r != null && pawn_r.color != this.color){
           pawn_r.enpassant = this;
         }
       }
@@ -561,7 +656,9 @@ class Pawn extends Chesspiece {
     if(target != null){
       target.alive = false;
     }else if(this.enpassant != null && this.x == this.enpassant.x){ // moved behind en passant
-      this.enpassant.alive = false;
+      // console.log(this.enpassant);
+      var eating = board.getPieceAt(this.enpassant.x, this.enpassant.y);
+      eating.alive = false;
     }
     if(this.reachEnd()){
       board.promoting = this;
@@ -630,5 +727,21 @@ class Pawn extends Chesspiece {
       else
         image(black_images[i], this.x*this.scale+offset, y*this.scale+offset, img_scale, img_scale);
     }
+  }
+
+  clonePiece(board) {
+    var newPiece = new Pawn(this.x,this.y,this.color,this.scale);
+    newPiece.moving = this.moving;
+    newPiece.alive = this.alive;
+    newPiece.first_move = this.first_move;
+    for(var i = 0; i < this.moves.length; i++){
+      move_x = this.moves[i][0];
+      move_y = this.moves[i][1];
+      move = [move_x, move_y];
+      newPiece.moves.push(move);
+    }
+    newPiece.promotion = this.promotion;
+    newPiece.enpassant = this.enpassant;
+    return newPiece;
   }
 }
