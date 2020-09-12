@@ -10,6 +10,7 @@ class Chesspiece {
     this.alive = true;
     this.first_move = true;
     this.moves = [];
+    this.capturing = false;
   }
 
   show() {
@@ -69,6 +70,9 @@ class Chesspiece {
     var eating = board.getPieceAt(x, y);
     move = [x, y];
     if(this.canMove(board, x, y, eating)){
+      if(eating != null){
+        this.capturing = true;
+      }
       return move;
     }
     return null;
@@ -282,6 +286,8 @@ class King extends Chesspiece {
 
   castle(rook) {
     var dx = this.x - rook.x;
+    this.first_move = false;
+    rook.first_move = false;
     if(dx > 0){ // castle with left rook
       this.x -= 2;
       rook.x = this.x + 1;
@@ -320,6 +326,7 @@ class King extends Chesspiece {
   }
 
   legalMoves(board) {
+    this.capturing = false;
     var straight_moves = this.straightMoves(board, 1);
     var corner_moves = this.cornerMoves(board, 1);
     var castle_moves = this.castleMoves(board);
@@ -334,9 +341,9 @@ class King extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     return newPiece;
@@ -383,6 +390,7 @@ class Queen extends Chesspiece {
   }
 
   legalMoves(board) {
+    this.capturing = false;
     var straight_moves = this.straightMoves(board, 7);
     var corner_moves = this.cornerMoves(board, 7);
     var moves = straight_moves.concat(corner_moves);
@@ -395,9 +403,9 @@ class Queen extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     return newPiece;
@@ -438,6 +446,7 @@ class Rook extends Chesspiece {
   }
 
   legalMoves(board) {
+    this.capturing = false;
     return this.straightMoves(board, 7);
   }
 
@@ -447,9 +456,9 @@ class Rook extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     return newPiece;
@@ -488,7 +497,8 @@ class Knight extends Chesspiece {
     }
   }
 
-  legalMoves() {
+  legalMoves(board) {
+    this.capturing = false;
     var moves = [];
     var move;
     for(var dx = -2; dx <= 2; dx++){
@@ -507,9 +517,9 @@ class Knight extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     return newPiece;
@@ -550,6 +560,7 @@ class Bishop extends Chesspiece {
   }
 
   legalMoves(board) {
+    this.capturing = false;
     return this.cornerMoves(board, 7);
   }
 
@@ -559,9 +570,9 @@ class Bishop extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     return newPiece;
@@ -607,7 +618,7 @@ class Pawn extends Chesspiece {
       }
     }else if(dy >= 0 && dy <= 1 && dx == 0){ // moving forward
       return true;
-    }else if(dy == 2 && dx == 0){ // moving forward 2 space
+    }else if(dy == 2 && dx == 0 && !this.leap_forward(board, dy)){ // moving forward 2 space
       if(this.first_move){ // using first move
         return "double";
       }else{
@@ -666,6 +677,7 @@ class Pawn extends Chesspiece {
   }
 
   legalMoves(board) {
+    this.capturing = false;
     var moves = [];
     var dy, moveX, moveY, move;
     if(this.color == board.player){
@@ -735,9 +747,9 @@ class Pawn extends Chesspiece {
     newPiece.alive = this.alive;
     newPiece.first_move = this.first_move;
     for(var i = 0; i < this.moves.length; i++){
-      move_x = this.moves[i][0];
-      move_y = this.moves[i][1];
-      move = [move_x, move_y];
+      var move_x = this.moves[i][0];
+      var move_y = this.moves[i][1];
+      var move = [move_x, move_y];
       newPiece.moves.push(move);
     }
     newPiece.promotion = this.promotion;

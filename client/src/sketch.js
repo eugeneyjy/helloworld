@@ -6,7 +6,7 @@ var delay = 15;
 var border_width = 10;
 var board_scale = 9;
 var offset = border_width/2;
-var minimax = new Minimax(2);
+var minimax = new Minimax(4);
 
 function preload() {
   black_images.push(loadImage('./image/Queen.png'));
@@ -35,9 +35,9 @@ function draw() {
   background("black");
   // print("showing");
   board.show();
+  // board.isEnd();
   // print("end");
   runAI();
-  board.isEnd();
 
   // noLoop();
 }
@@ -46,6 +46,7 @@ function runAI() {
   var from, to;
   if(delay < 0){
     if(board.turn == minimax.color){
+      // board = minimax.getMove(board, 0, -Infinity, Infinity);
       [from,to] = minimax.getMove(board);
       board.movePiece(from[0], from[1], to[0], to[1]);
     }

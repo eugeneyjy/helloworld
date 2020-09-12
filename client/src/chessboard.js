@@ -118,6 +118,7 @@ class Chessboard {
       this.clearBlackEnPassant();
     }
     this.changeTurn();
+    this.isEnd();
     showTurn();
   }
 
@@ -208,10 +209,10 @@ class Chessboard {
 
   isEnd() {
     if(this.blackPieces[4].dead()){
-      console.log("White win");
+      // console.log("White win");
       this.win = "white";
     }else if(this.whitePieces[4].dead()){
-      console.log("Black win");
+      // console.log("Black win");
       this.win = "black";
     }
   }
