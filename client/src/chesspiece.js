@@ -240,7 +240,7 @@ class King extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kg";
-    this.value = 100;
+    this.value = 10000;
 
     if(this.color == "white"){
       this.img = white_images[5];
@@ -335,7 +335,7 @@ class King extends Chesspiece {
     return moves;
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new King(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
@@ -354,7 +354,7 @@ class Queen extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "qn";
-    this.value = 9;
+    this.value = 900;
 
     if(this.color == "white"){
       this.img = white_images[0];
@@ -397,7 +397,7 @@ class Queen extends Chesspiece {
     return moves;
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new Queen(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
@@ -416,7 +416,7 @@ class Rook extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "rk";
-    this.value = 5;
+    this.value = 500;
 
     if(this.color == "white"){
       this.img = white_images[1];
@@ -450,7 +450,7 @@ class Rook extends Chesspiece {
     return this.straightMoves(board, 7);
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new Rook(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
@@ -469,7 +469,7 @@ class Knight extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "kn";
-    this.value = 3;
+    this.value = 300;
 
     if(this.color == "white"){
       this.img = white_images[3];
@@ -511,7 +511,7 @@ class Knight extends Chesspiece {
     return moves;
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new Knight(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
@@ -530,7 +530,7 @@ class Bishop extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "bs";
-    this.value = 3;
+    this.value = 300;
 
     if(this.color == "white"){
       this.img = white_images[2];
@@ -564,7 +564,7 @@ class Bishop extends Chesspiece {
     return this.cornerMoves(board, 7);
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new Bishop(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
@@ -583,7 +583,7 @@ class Pawn extends Chesspiece {
   constructor(x, y, color, scale) {
     super(x, y, color, scale);
     this.type = "pn";
-    this.value = 1;
+    this.value = 100;
     this.promotion = false;
     this.enpassant = null;
 
@@ -741,7 +741,7 @@ class Pawn extends Chesspiece {
     }
   }
 
-  clonePiece(board) {
+  clonePiece() {
     var newPiece = new Pawn(this.x,this.y,this.color,this.scale);
     newPiece.moving = this.moving;
     newPiece.alive = this.alive;
