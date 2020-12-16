@@ -43,10 +43,12 @@ class Minimax {
     for(var i = 0; i < ai_pieces.length; i++){
       if(!ai_pieces[i].dead())
         score += ai_pieces[i].value;
+        score += PositionEvaluation.getPiecePositionScore(true, ai_pieces[i]);
     }
     for(var i = 0; i < player_pieces.length; i++){
       if(!player_pieces[i].dead())
         score -= player_pieces[i].value;
+        score -= PositionEvaluation.getPiecePositionScore(false, player_pieces[i]);
     }
     return score;
   }
@@ -59,7 +61,7 @@ class Minimax {
     // for(var i = (pieces.length-1); i >= 0; i--){
     for(var i = 0; i < pieces.length; i++){
       // console.log(i);
-      curr_piece = pieces[i].clonePiece(board);
+      curr_piece = pieces[i].clonePiece();
       if(curr_piece.alive){
         curr_piece.moves = curr_piece.legalMoves(board);
         result.push(curr_piece);
@@ -109,7 +111,7 @@ class Minimax {
 
     var max_value = -Infinity, value;
     var pieces = this.successor(board, this.color);
-    var temp_board, count = 1;
+    var temp_board;
     var moving_piece, curr_move, move_x, move_y, max_i, max_j;
     var max_piece;
     for(var i = 0; i < pieces.length; i++){
