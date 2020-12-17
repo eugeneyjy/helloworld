@@ -2,7 +2,9 @@ class PositionEvaluation {
 
     static evaluation(isAI, evaluation, piece) {
         if (isAI) {
-            return evaluation.reverse()[piece.y][piece.x];
+            const copiedEval = [...evaluation];
+            return copiedEval.reverse()[piece.y][piece.x];
+            // return evaluation.reverse()[piece.y][piece.x];
         }
         return evaluation[piece.y][piece.x];
     }

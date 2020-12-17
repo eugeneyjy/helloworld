@@ -68,7 +68,7 @@ class Minimax {
       }
     }
     // console.log(result);
-    result = shuffling(result);
+    // result = shuffling(result);
     return result;
   }
 
@@ -104,9 +104,9 @@ class Minimax {
     }
 
     if(board.win == this.opp_color){
-      return -200;
+      return -100000000000;
     }else if(board.win == this.color){
-      return 200;
+      return 100000000000;
     }
 
     var max_value = -Infinity, value;
@@ -149,9 +149,9 @@ class Minimax {
     }
 
     if(board.win == this.opp_color){
-      return -200;
+      return -100000000000;
     }else if(board.win == this.color){
-      return 200;
+      return 100000000000;
     }
 
     var value = Infinity;
